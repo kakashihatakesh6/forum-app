@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
@@ -10,7 +11,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { title, description } = await request.json();
+    const { title, description, tags } = await request.json();
 
     if (!title || typeof title !== "string" || title.trim() === "") {
       return NextResponse.json(
@@ -33,6 +34,7 @@ export async function POST(request: Request) {
       data: {
         title,
         description: description || null,
+        tags: tags || [],
         creatorId: user.id,
       },
     });
@@ -53,8 +55,22 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get("limit") || "10");
     const page = parseInt(searchParams.get("page") || "1");
     const skip = (page - 1) * limit;
+    const tag = searchParams.get("tag");
+
+    // Base query
+    let whereClause = {};
+    
+    // Filter by tag if provided
+    if (tag) {
+      whereClause = {
+        tags: {
+          has: tag
+        }
+      };
+    }
 
     const forums = await prisma.forum.findMany({
+      where: whereClause,
       take: limit,
       skip,
       orderBy: {
@@ -76,7 +92,7 @@ export async function GET(request: Request) {
       },
     });
 
-    const total = await prisma.forum.count();
+    const total = await prisma.forum.count({ where: whereClause });
 
     return NextResponse.json({
       forums,

@@ -88,7 +88,7 @@ export function CommentList({ forumId }: CommentListProps) {
             <div className="flex items-start gap-4">
               <div className="relative h-10 w-10 overflow-hidden rounded-full">
                 <img
-                  src={ "/avtaar.png" || comment.author.avatar}
+                  src="/avtaar.png"
                   alt={comment.author.name}
                   className="h-full w-full object-cover"
                 />

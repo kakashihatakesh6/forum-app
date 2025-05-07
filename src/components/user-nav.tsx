@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { dummyUser } from "@/lib/dummy-data"
 
 export function UserNav() {
@@ -59,7 +60,13 @@ export function UserNav() {
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="relative h-8 w-8 overflow-hidden rounded-full">
-          <img src={user.avatar || "/placeholder.svg"} alt={user.name} className="h-full w-full object-cover" />
+          <Image 
+            src={user.avatar || "/placeholder.svg"} 
+            alt={user.name} 
+            className="h-full w-full object-cover"
+            width={32}
+            height={32}
+          />
         </div>
       </button>
 

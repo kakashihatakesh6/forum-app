@@ -1,28 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { use } from "react";
 
-interface CreatePostPageProps {
-  params: { id: string };
-}
+type PageParams = {
+  id: string;
+};
 
-export default function CreatePostPage({ params }: CreatePostPageProps) {
-  const forumId = params.id;
+export default function CreatePostPage({ 
+  params 
+}: { 
+  params: Promise<PageParams>
+}) {
+  const { id: forumId } = use(params);
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Redirect to sign in if not authenticated
-  if (status === "unauthenticated") {
-    router.push(`/signin?callbackUrl=/forums/${forumId}/posts/create`);
-    return null;
-  }
+  useEffect(() => {
+    // Redirect to sign in if not authenticated
+    if (status === "unauthenticated") {
+      router.push(`/signin?callbackUrl=/forums/${forumId}/posts/create`);
+    }
+  }, [status, router, forumId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,8 +67,8 @@ export default function CreatePostPage({ params }: CreatePostPageProps) {
       const post = await response.json();
       router.push(`/forums/${forumId}/posts/${post.id}`);
       router.refresh();
-    } catch (error: any) {
-      setError(error.message || "An error occurred creating the post");
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "An error occurred creating the post");
     } finally {
       setIsLoading(false);
     }

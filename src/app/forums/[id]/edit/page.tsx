@@ -1,25 +1,61 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-export default function CreateForum() {
+export default function EditForum() {
   const router = useRouter();
-  const { status } = useSession();
+  const params = useParams();
+  const { data: session, status } = useSession();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
 
-  // Redirect to sign in if not authenticated
-  if (status === "unauthenticated") {
-    router.push("/signin?callbackUrl=/forums/create");
-    return null;
-  }
+  useEffect(() => {
+    // Redirect to sign in if not authenticated
+    if (status === "unauthenticated") {
+      router.push(`/signin?callbackUrl=/forums/${params.id}/edit`);
+    }
+  }, [status, router, params.id]);
+
+  useEffect(() => {
+    const fetchForum = async () => {
+      try {
+        const response = await fetch(`/api/forums/${params.id}`);
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch forum");
+        }
+        
+        const forum = await response.json();
+        
+        // Check if the user is the creator
+        if (session?.user?.email !== forum.creator.email) {
+          setError("You can only edit your own forums");
+          router.push(`/forums/${params.id}`);
+          return;
+        }
+        
+        setTitle(forum.title);
+        setDescription(forum.description || "");
+        setTags(forum.tags || []);
+      } catch (error: unknown) {
+        setError(error instanceof Error ? error.message : "Error fetching forum");
+      } finally {
+        setIsFetching(false);
+      }
+    };
+
+    if (session?.user) {
+      fetchForum();
+    }
+  }, [params.id, session, router]);
 
   const handleAddTag = () => {
     const trimmedTag = tagInput.trim();
@@ -52,8 +88,8 @@ export default function CreateForum() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/forums", {
-        method: "POST",
+      const response = await fetch(`/api/forums/${params.id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -66,20 +102,19 @@ export default function CreateForum() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to create forum");
+        throw new Error(data.error || "Failed to update forum");
       }
 
-      const forum = await response.json();
-      router.push(`/forums/${forum.id}`);
+      router.push(`/forums/${params.id}`);
       router.refresh();
-    } catch (error: Error | unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred creating the forum");
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "An error occurred updating the forum");
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (status === "loading") {
+  if (status === "loading" || isFetching) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <div className="animate-pulse text-center">
@@ -93,8 +128,8 @@ export default function CreateForum() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Create a New Forum</h1>
-        <p className="text-gray-600">Start a discussion about any topic with the community</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Edit Forum</h1>
+        <p className="text-gray-600">Update your forum details</p>
       </div>
 
       <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-100">
@@ -193,19 +228,9 @@ export default function CreateForum() {
             </p>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-md border border-gray-100">
-            <h3 className="text-sm font-medium text-gray-900 mb-1">Forum Guidelines</h3>
-            <ul className="text-xs text-gray-600 list-disc pl-5 space-y-1">
-              <li>Be respectful to all members</li>
-              <li>Stay on topic with your discussions</li>
-              <li>No spam or self-promotion</li>
-              <li>Keep content appropriate for all audiences</li>
-            </ul>
-          </div>
-
           <div className="flex items-center justify-end space-x-3 pt-4">
             <Link
-              href="/forums"
+              href={`/forums/${params.id}`}
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition duration-150"
             >
               Cancel
@@ -221,10 +246,10 @@ export default function CreateForum() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Creating...
+                  Updating...
                 </>
               ) : (
-                "Create Forum"
+                "Update Forum"
               )}
             </button>
           </div>

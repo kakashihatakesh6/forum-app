@@ -4,6 +4,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import Image from "next/image"
 import { dummyUser } from "@/lib/dummy-data"
 
 interface CommentFormProps {
@@ -49,9 +50,11 @@ export function CommentForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="flex gap-4">
         <div className="relative h-10 w-10 overflow-hidden rounded-full">
-          <img
-            src={ "/avtaar.png" || dummyUser.avatar}
+          <Image
+            src="/avtaar.png"
             alt={dummyUser.name}
+            width={40}
+            height={40}
             className="h-full w-full object-cover"
           />
         </div>

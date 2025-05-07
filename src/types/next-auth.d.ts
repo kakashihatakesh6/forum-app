@@ -1,5 +1,5 @@
-import NextAuth, { DefaultSession } from "next-auth";
-import { JWT } from "next-auth/jwt";
+import type { DefaultSession } from "next-auth";
+import type { JWT as NextAuthJWT } from "next-auth/jwt";
 
 declare module "next-auth" {
   interface Session {
@@ -14,7 +14,7 @@ declare module "next-auth" {
 }
 
 declare module "next-auth/jwt" {
-  interface JWT {
+  interface JWT extends NextAuthJWT {
     id: string;
   }
 } 

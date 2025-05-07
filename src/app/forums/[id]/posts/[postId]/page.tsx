@@ -2,14 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatDistanceToNow } from "date-fns";
-import CommentSection from "./CommentSection";
+import CommentSection from "@/components/CommentSection";
 
 interface PostDetailPageProps {
-  params: { id: string; postId: string };
+  params: Promise<{ id: string; postId: string }>;
 }
 
 export default async function PostDetailPage({ params }: PostDetailPageProps) {
-  const { id: forumId, postId } = params;
+  const { id: forumId, postId } = await params;
 
   const post = await prisma.post.findUnique({
     where: { id: postId },
@@ -70,8 +70,32 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
     },
   });
 
+  // Format the comments to match the expected Comment type
+  const formattedComments = comments.map(comment => ({
+    id: comment.id,
+    content: comment.content,
+    createdAt: comment.createdAt.toISOString(),
+    author: {
+      id: comment.author.id,
+      name: comment.author.name,
+      image: comment.author.image,
+    },
+    parentId: comment.parentId,
+    replies: comment.replies.map(reply => ({
+      id: reply.id,
+      content: reply.content,
+      createdAt: reply.createdAt.toISOString(),
+      author: {
+        id: reply.author.id,
+        name: reply.author.name,
+        image: reply.author.image,
+      },
+      parentId: reply.parentId,
+    })),
+  }));
+
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 px-4 py-8">
       <div className="mb-6">
         <div className="text-sm breadcrumbs">
           <Link href="/forums" className="text-indigo-600 hover:text-indigo-900">
@@ -105,7 +129,7 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
         </div>
       </div>
 
-      <CommentSection postId={postId} initialComments={comments} />
+      <CommentSection postId={postId} initialComments={formattedComments} />
     </div>
   );
 } 

@@ -13,14 +13,18 @@ if (!MONGODB_URI) {
  * in development. This prevents connections growing exponentially
  * during API Route usage.
  */
-declare global {
-  var mongoose: {
-    conn: typeof mongoose | null;
-    promise: Promise<typeof mongoose> | null;
-  };
+interface MongooseCache {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
 }
 
-let cached = global.mongoose || { conn: null, promise: null };
+// Declare mongoose cache on the global object
+declare global {
+  // eslint-disable-next-line no-var
+  var mongoose: MongooseCache | undefined;
+}
+
+const cached: MongooseCache = global.mongoose || { conn: null, promise: null };
 
 if (!global.mongoose) {
   global.mongoose = cached;
@@ -32,11 +36,8 @@ async function dbConnect() {
   }
 
   if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
-
-    cached.promise = mongoose.connect(MONGODB_URI).then((mongoose) => {
+    // We've already checked that MONGODB_URI exists, so we can safely assert it as string
+    cached.promise = mongoose.connect(MONGODB_URI as string).then((mongoose) => {
       return mongoose;
     });
   }

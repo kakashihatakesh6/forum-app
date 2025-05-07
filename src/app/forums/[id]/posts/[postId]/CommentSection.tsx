@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
+import Image from "next/image";
 
 interface Author {
   id: string;
@@ -88,8 +89,8 @@ export default function CommentSection({ postId, initialComments }: CommentSecti
       
       setComments([...comments, commentWithAuthor]);
       setComment("");
-    } catch (err: any) {
-      setError(err.message || "An error occurred adding your comment");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An error occurred adding your comment");
     } finally {
       setIsSubmitting(false);
     }
@@ -156,8 +157,8 @@ export default function CommentSection({ postId, initialComments }: CommentSecti
       setComments(updatedComments);
       setReplyToId(null);
       setReplyContent("");
-    } catch (err: any) {
-      setError(err.message || "An error occurred adding your reply");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An error occurred adding your reply");
     } finally {
       setIsSubmitting(false);
     }
@@ -167,9 +168,11 @@ export default function CommentSection({ postId, initialComments }: CommentSecti
     <div className={`${isReply ? "ml-8 mt-3" : "mb-6 border-b border-gray-200 pb-6"}`}>
       <div className="flex items-start">
         {comment.author.image ? (
-          <img
+          <Image
             src={comment.author.image}
             alt={`${comment.author.name || comment.author.email}'s avatar`}
+            width={32}
+            height={32}
             className="h-8 w-8 rounded-full mr-3"
           />
         ) : (

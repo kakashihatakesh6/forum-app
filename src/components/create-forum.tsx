@@ -37,7 +37,7 @@ export default function CreateForumPage() {
       }
     }
     
-    document.addEventListener("mousedown\", handleClickOutside)kOutside)
+    document.addEventListener("mousedown", handleClickOutside)
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
@@ -66,7 +66,7 @@ export default function CreateForumPage() {
       <div className="max-w-2xl mx-auto rounded-lg border border-gray-200 bg-white shadow-sm">
         <div className="p-6 border-b border-gray-200">
           <h2 className="text-xl font-bold">Create a New Forum</h2>
-          <p className="text-sm text-gray-500">Start a discussion on a topic you're passionate about</p>
+          <p className="text-sm text-gray-500">Start a discussion on a topic you&apos;re passionate about</p>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="p-6 space-y-4">

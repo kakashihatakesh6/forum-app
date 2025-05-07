@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { MessageSquareIcon, UsersIcon } from "lucide-react"
 import { dummyForums } from "@/lib/dummy-data"
 
@@ -39,9 +40,11 @@ export function ForumList() {
               <div className="mt-6 flex justify-between">
                 <div className="flex items-center space-x-2">
                   <div className="relative h-6 w-6 overflow-hidden rounded-full">
-                    <img
+                    <Image
                       src={forum.author.avatar || "/placeholder.svg"}
                       alt={forum.author.name}
+                      width={24}
+                      height={24}
                       className="h-full w-full object-cover"
                     />
                   </div>

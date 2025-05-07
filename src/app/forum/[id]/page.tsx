@@ -1,13 +1,18 @@
+'use client';
+
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import Image from "next/image"
+import { notFound, useParams } from "next/navigation"
 import { ArrowLeftIcon } from "lucide-react"
 import { CommentList } from "@/components/comment-list"
 import { CommentForm } from "@/components/comment-form"
 import { dummyForums } from "@/lib/dummy-data"
 import { formatDate } from "@/lib/utils"
 
-export default function ForumPage({ params }: { params: { id: string } }) {
-  const forum = dummyForums.find((f) => f.id === params.id)
+export default function ForumPage() {
+// export default function ForumPage({ params }: { params: { id: string } }) {
+  const {id} = useParams();
+  const forum = dummyForums.find((f) => f.id === id)
 
   if (!forum) {
     notFound()
@@ -48,9 +53,11 @@ export default function ForumPage({ params }: { params: { id: string } }) {
 
           <div className="flex items-center">
             <div className="relative h-10 w-10 mr-3 overflow-hidden rounded-full">
-              <img
+              <Image
                 src={forum.author.avatar || "/avtaar.png"}
                 alt={forum.author.name}
+                width={40}
+                height={40}
                 className="h-full w-full object-cover"
               />
             </div>
@@ -68,6 +75,7 @@ export default function ForumPage({ params }: { params: { id: string } }) {
           <CommentList forumId={forum.id} />
         </div>
       </div>
+
     </div>
   )
 }
