@@ -1,103 +1,168 @@
-import Image from "next/image";
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 
-export default function Home() {
+// Sample dummy forums for empty state
+const dummyForums = [
+  {
+    id: "dummy1",
+    title: "Welcome to the Community",
+    description: "Introduce yourself and connect with other members",
+    creator: { name: "Admin", email: "admin@example.com" },
+    _count: { posts: 12 },
+  },
+  {
+    id: "dummy2",
+    title: "Tech Discussion",
+    description: "Share thoughts on the latest technology trends",
+    creator: { name: "TechGuru", email: "tech@example.com" },
+    _count: { posts: 8 },
+  },
+  {
+    id: "dummy3",
+    title: "Development Best Practices",
+    description: "Discussion on coding standards and practices",
+    creator: { name: "DevMaster", email: "dev@example.com" },
+    _count: { posts: 15 },
+  },
+];
+
+export default async function Home() {
+  // Fetch recent forums
+  const recentForums = await prisma.forum.findMany({
+    take: 5,
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      creator: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+      _count: {
+        select: {
+          posts: true,
+        },
+      },
+    },
+  });
+
+  // Use dummy forums if no real forums exist
+  const forumsToDisplay = recentForums.length > 0 ? recentForums : dummyForums;
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="space-y-10">
+      <section className="text-center py-16 bg-gradient-to-r from-primary via-accent to-pink-500 rounded-2xl text-white">
+        <h1 className="text-5xl font-bold tracking-tight mb-4">
+          Welcome to Forum App
+        </h1>
+        <p className="mt-4 text-xl max-w-2xl mx-auto opacity-90">
+          Join discussions, create forums, and connect with other users in this
+          community platform.
+        </p>
+        <div className="mt-10 flex gap-4 justify-center">
+          <Link
+            href="/forums"
+            className="px-6 py-3 text-base font-medium rounded-md shadow-lg bg-white text-primary hover:bg-gray-100 transition-all duration-200 transform hover:-translate-y-1"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Browse All Forums
+          </Link>
+          <Link
+            href="/forums/create"
+            className="px-6 py-3 text-base font-medium rounded-md shadow-lg bg-primary-light text-primary hover:bg-indigo-200 transition-all duration-200 transform hover:-translate-y-1"
           >
-            Read our docs
-          </a>
+            Create a Forum
+          </Link>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      <section className="bg-card shadow-xl rounded-xl overflow-hidden border border-border">
+        <div className="px-6 py-5 border-b border-border bg-muted">
+          <h2 className="text-xl font-semibold text-foreground">Recent Forums</h2>
+          <p className="mt-1 text-sm text-secondary">
+            Check out the latest discussion topics
+          </p>
+        </div>
+        <div>
+          <ul className="divide-y divide-border">
+            {forumsToDisplay.map((forum) => (
+              <li key={forum.id} className="px-6 py-5 hover:bg-muted transition-colors duration-150">
+                {recentForums.length > 0 ? (
+                  <Link href={`/forums/${forum.id}`} className="block">
+                    <div className="flex items-center justify-between">
+                      <p className="text-lg font-medium text-primary truncate">{forum.title}</p>
+                      <div className="ml-2 flex-shrink-0 flex">
+                        <p className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-primary-light text-primary">
+                          {forum._count.posts} posts
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-2 sm:flex sm:justify-between">
+                      <div className="sm:flex">
+                        <p className="flex items-center text-sm text-secondary">
+                          {forum.description || "No description provided"}
+                        </p>
+                      </div>
+                      <div className="mt-2 flex items-center text-sm text-secondary sm:mt-0">
+                        <p>
+                          Created by {forum.creator.name || forum.creator.email}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                ) : (
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-lg font-medium text-primary truncate">{forum.title}</p>
+                      <div className="ml-2 flex-shrink-0 flex">
+                        <p className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-primary-light text-primary">
+                          {forum._count.posts} posts
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-2 sm:flex sm:justify-between">
+                      <div className="sm:flex">
+                        <p className="flex items-center text-sm text-secondary">
+                          {forum.description}
+                        </p>
+                      </div>
+                      <div className="mt-2 flex items-center text-sm text-secondary sm:mt-0">
+                        <p>
+                          Created by {forum.creator.name}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+          <div className="px-6 py-4 border-t border-border bg-muted">
+            <Link
+              href="/forums"
+              className="inline-flex items-center text-primary hover:text-primary-hover font-medium"
+            >
+              See all forums →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-card shadow-lg rounded-xl p-6 border border-border">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-foreground mb-4">Join Our Community Today</h2>
+          <p className="text-secondary max-w-2xl mx-auto mb-6">
+            Create an account to participate in discussions, create your own forums, and connect with other members.
+          </p>
+          <Link
+            href="/signup"
+            className="px-6 py-3 text-base font-medium rounded-md shadow-md bg-primary text-white hover:bg-primary-hover transition-all duration-200"
+          >
+            Sign Up Now
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }

@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Forum App
+
+A full-stack Next.js web application where users can sign up, create forums, and interact through comments/questions. Similar to GitHub Discussions, this application allows community discussions in an organized manner.
+
+## Features
+
+- User authentication with Next Auth
+- Create and browse forums
+- Create posts in forums
+- Comment on posts with threaded replies
+- Responsive design
+
+## Tech Stack
+
+- **Frontend**: Next.js with TypeScript
+- **Styling**: Tailwind CSS
+- **Authentication**: NextAuth.js
+- **Database**: Prisma with SQLite
+- **UI Components**: Tailwind Forms
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone <repository-url>
+cd forum-app
+```
+
+2. Install dependencies
+```bash
+npm install
+# or
+yarn
+```
+
+3. Set up the database
+```bash
+npx prisma migrate dev --name init
+# This will create your SQLite database and apply migrations
+```
+
+4. Start the development server
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env` file in the root directory with the following variables:
+```
+DATABASE_URL="file:./dev.db"
+NEXTAUTH_SECRET="your-secret-key-change-in-production"
+NEXTAUTH_URL="http://localhost:3000"
+```
 
-## Learn More
+For production, make sure to change the `NEXTAUTH_SECRET` to a strong, unique value.
 
-To learn more about Next.js, take a look at the following resources:
+## Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Build the application for production:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run build
+# or
+yarn build
+```
 
-## Deploy on Vercel
+Start the production server:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm start
+# or
+yarn start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
