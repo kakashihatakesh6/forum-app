@@ -1,8 +1,24 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
+// Define types
+type Creator = {
+  name: string | null;
+  email: string;
+}
+
+type Forum = {
+  id: string;
+  title: string;
+  description: string | null;
+  creator: Creator;
+  _count: {
+    posts: number;
+  };
+}
+
 // Sample dummy forums for empty state
-const dummyForums = [
+const dummyForums: Forum[] = [
   {
     id: "dummy1",
     title: "Welcome to the Community",
@@ -27,26 +43,34 @@ const dummyForums = [
 ];
 
 export default async function Home() {
-  // Fetch recent forums
-  const recentForums = await prisma.forum.findMany({
-    take: 5,
-    orderBy: {
-      createdAt: "desc",
-    },
-    include: {
-      creator: {
-        select: {
-          name: true,
-          email: true,
+  // Try to fetch recent forums, use dummy data on error
+  let recentForums: Forum[] = [];
+  
+  try {
+    recentForums = await prisma.forum.findMany({
+      take: 5,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        creator: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        _count: {
+          select: {
+            posts: true,
+          },
         },
       },
-      _count: {
-        select: {
-          posts: true,
-        },
-      },
-    },
-  });
+    });
+  } catch (error) {
+    console.error("Error fetching forums:", error);
+    // If there's an error with Prisma, we'll use dummy data
+    recentForums = [];
+  }
 
   // Use dummy forums if no real forums exist
   const forumsToDisplay = recentForums.length > 0 ? recentForums : dummyForums;

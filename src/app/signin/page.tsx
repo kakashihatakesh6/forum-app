@@ -18,14 +18,24 @@ export default function SignIn() {
     setIsLoading(true);
 
     try {
+      console.log("Attempting sign in with:", { email });
+      
       const result = await signIn("credentials", {
         redirect: false,
         email,
         password,
       });
 
+      console.log("Sign in result:", result);
+
       if (result?.error) {
         setError("Invalid email or password");
+        setIsLoading(false);
+        return;
+      }
+
+      if (!result?.ok) {
+        setError("Authentication failed. Please try again.");
         setIsLoading(false);
         return;
       }
