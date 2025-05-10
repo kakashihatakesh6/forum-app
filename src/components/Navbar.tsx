@@ -30,7 +30,7 @@ export default function Navbar() {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`bg-card border-b border-border sticky top-0 z-20 transition-all duration-300 ${
+      className={`bg-card border-b border-border sticky top-0 z-40 transition-all duration-300 ${
         scrolled ? 'shadow-md' : ''
       }`}
     >
