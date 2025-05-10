@@ -5,6 +5,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { FiHome, FiMessageSquare, FiCompass, FiUser, FiLogOut, FiLogIn, FiUserPlus } from "react-icons/fi";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -29,7 +30,7 @@ export default function Navbar() {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`bg-card border-b border-border sticky top-0 z-10 transition-all duration-300 ${
+      className={`bg-card border-b border-border sticky top-0 z-20 transition-all duration-300 ${
         scrolled ? 'shadow-md' : ''
       }`}
     >
@@ -41,7 +42,30 @@ export default function Navbar() {
                 <motion.span 
                   whileHover={{ scale: 1.05 }} 
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  className="flex items-center"
                 >
+                  <svg 
+                    width="24" 
+                    height="24" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="mr-2"
+                  >
+                    <path 
+                      d="M21 11.5C21.0034 12.8199 20.6951 14.1219 20.1 15.3C19.3944 16.7118 18.3098 17.8992 16.9674 18.7293C15.6251 19.5594 14.0782 19.9994 12.5 20C11.1801 20.0035 9.87812 19.6951 8.7 19.1L3 21L4.9 15.3C4.30493 14.1219 3.99656 12.8199 4 11.5C4.00061 9.92179 4.44061 8.37488 5.27072 7.03258C6.10083 5.69028 7.28825 4.6056 8.7 3.90003C9.87812 3.30496 11.1801 2.99659 12.5 3.00003H13C15.0843 3.11502 17.053 3.99479 18.5291 5.47089C20.0052 6.94699 20.885 8.91568 21 11V11.5Z" 
+                      stroke="url(#gradient)" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                    />
+                    <defs>
+                      <linearGradient id="gradient" x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
+                        <stop stopColor="var(--primary)" />
+                        <stop offset="1" stopColor="var(--accent)" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
                   Forum App
                 </motion.span>
               </Link>
@@ -58,7 +82,9 @@ export default function Navbar() {
                 <motion.span 
                   whileHover={{ y: -2 }} 
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  className="flex items-center"
                 >
+                  <FiHome className="mr-1.5" />
                   Home
                 </motion.span>
               </Link>
@@ -73,7 +99,9 @@ export default function Navbar() {
                 <motion.span 
                   whileHover={{ y: -2 }} 
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  className="flex items-center"
                 >
+                  <FiMessageSquare className="mr-1.5" />
                   Forums
                 </motion.span>
               </Link>
@@ -88,7 +116,9 @@ export default function Navbar() {
                 <motion.span 
                   whileHover={{ y: -2 }} 
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  className="flex items-center"
                 >
+                  <FiCompass className="mr-1.5" />
                   Explore
                 </motion.span>
               </Link>
@@ -111,7 +141,9 @@ export default function Navbar() {
                   <motion.span 
                     whileHover={{ scale: 1.05 }} 
                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    className="flex items-center"
                   >
+                    <FiUser className="mr-1.5" />
                     Profile
                   </motion.span>
                 </Link>
@@ -119,8 +151,9 @@ export default function Navbar() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => signOut()}
-                  className="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors duration-200"
+                  className="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors duration-200 flex items-center cursor-pointer"
                 >
+                  <FiLogOut className="mr-1.5" />
                   Sign out
                 </motion.button>
               </div>
@@ -133,7 +166,9 @@ export default function Navbar() {
                   <motion.span 
                     whileHover={{ scale: 1.05 }} 
                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    className="flex items-center"
                   >
+                    <FiLogIn className="mr-1.5" />
                     Sign in
                   </motion.span>
                 </Link>
@@ -145,6 +180,7 @@ export default function Navbar() {
                     whileTap={{ scale: 0.95 }}
                     className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-all duration-200"
                   >
+                    <FiUserPlus className="mr-1.5" />
                     Sign up
                   </motion.div>
                 </Link>
@@ -202,7 +238,8 @@ export default function Navbar() {
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                <motion.div whileHover={{ x: 5 }} transition={{ duration: 0.2 }}>
+                <motion.div whileHover={{ x: 5 }} transition={{ duration: 0.2 }} className="flex items-center">
+                  <FiHome className="mr-2" />
                   Home
                 </motion.div>
               </Link>
@@ -215,7 +252,8 @@ export default function Navbar() {
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                <motion.div whileHover={{ x: 5 }} transition={{ duration: 0.2 }}>
+                <motion.div whileHover={{ x: 5 }} transition={{ duration: 0.2 }} className="flex items-center">
+                  <FiMessageSquare className="mr-2" />
                   Forums
                 </motion.div>
               </Link>
@@ -228,7 +266,8 @@ export default function Navbar() {
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                <motion.div whileHover={{ x: 5 }} transition={{ duration: 0.2 }}>
+                <motion.div whileHover={{ x: 5 }} transition={{ duration: 0.2 }} className="flex items-center">
+                  <FiCompass className="mr-2" />
                   Explore
                 </motion.div>
               </Link>
@@ -249,7 +288,8 @@ export default function Navbar() {
                     className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 transition-all duration-200"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <motion.div whileHover={{ x: 5 }} transition={{ duration: 0.2 }}>
+                    <motion.div whileHover={{ x: 5 }} transition={{ duration: 0.2 }} className="flex items-center">
+                      <FiUser className="mr-2" />
                       Profile
                     </motion.div>
                   </Link>
@@ -261,7 +301,8 @@ export default function Navbar() {
                     }}
                     className="block w-full text-left pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-red-300 hover:text-red-700 transition-all duration-200"
                   >
-                    <motion.div whileHover={{ x: 5 }} transition={{ duration: 0.2 }}>
+                    <motion.div whileHover={{ x: 5 }} transition={{ duration: 0.2 }} className="flex items-center">
+                      <FiLogOut className="mr-2" />
                       Sign out
                     </motion.div>
                   </motion.button>
@@ -275,8 +316,9 @@ export default function Navbar() {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="block w-full py-2 px-4 text-center text-base font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded-md hover:bg-gray-50 transition-all duration-200"
+                      className="block w-full py-2 px-4 text-center text-base font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded-md hover:bg-gray-50 transition-all duration-200 flex items-center justify-center"
                     >
+                      <FiLogIn className="mr-2" />
                       Sign in
                     </motion.div>
                   </Link>
@@ -287,8 +329,9 @@ export default function Navbar() {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="block w-full py-2 px-4 text-center text-base font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-all duration-200"
+                      className="block w-full py-2 px-4 text-center text-base font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-all duration-200 flex items-center justify-center"
                     >
+                      <FiUserPlus className="mr-2" />
                       Sign up
                     </motion.div>
                   </Link>

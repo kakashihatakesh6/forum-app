@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import GithubProvider from "next-auth/providers/github";
 import bcrypt from "bcrypt";
 import dbConnect from "@/lib/mongodb";
 import { prisma } from "@/lib/prisma";
@@ -13,6 +16,16 @@ interface Credentials {
 const handler = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      allowDangerousEmailAccountLinking: true,
+    }),
+    GithubProvider({
+      clientId: process.env.GITHUB_ID || "",
+      clientSecret: process.env.GITHUB_SECRET || "",
+      allowDangerousEmailAccountLinking: true,
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -65,6 +78,12 @@ const handler = NextAuth({
   },
   debug: process.env.NODE_ENV !== "production",
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "google" || account?.provider === "github") {
+        return true; // Allow sign in with OAuth providers
+      }
+      return true; // Allow sign in with credentials
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;

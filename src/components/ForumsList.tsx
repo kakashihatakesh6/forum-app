@@ -1,7 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Link from "next/link";
-import { FiPlus } from "react-icons/fi";
+import { FiPlus, FiMessageCircle, FiTag } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 
@@ -43,6 +44,7 @@ interface Forum {
   };
   createdAt: Date;
   tags: string[];
+  category?: string;
 }
 
 interface ForumsListProps {
@@ -80,64 +82,77 @@ function ForumItem({ forum }: ForumItemProps) {
   return (
     <motion.div
       variants={item}
-      className="bg-white border border-gray-100 rounded-lg p-4 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+      className="bg-white border border-gray-100 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
     >
-      <Link href={`/forums/${forum.id}`}>
-        <div className="flex items-start">
-          <div className="flex-1">
-            <h3 className="text-lg font-medium text-gray-900 mb-1">
-              {forum.title}
-            </h3>
+      <Link href={`/forums/${forum.id}`} className="block p-4">
+        <div>
+          {/* Category tag and post count */}
+          <div className="flex justify-between items-center mb-2">
+            {forum.category && (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                {forum.category}
+              </span>
+            )}
+            <div className="flex items-center text-sm text-gray-500">
+              <FiMessageCircle className="mr-1 h-4 w-4" />
+              <span>{forum._count.posts} posts</span>
+            </div>
+          </div>
+
+          {/* Title and description */}
+          <h3 className="text-lg font-medium text-gray-900 mb-1">
+            {forum.title}
+          </h3>
+          {forum.description && (
             <p className="text-sm text-gray-600 mb-3 line-clamp-2">
               {forum.description}
             </p>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center">
-                  {forum.creator.image ? (
-                    <img
-                      src={forum.creator.image}
-                      alt={forum.creator.name || "User"}
-                      className="h-8 w-8 rounded-full"
-                    />
-                  ) : (
-                    <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                      <span className="text-sm font-medium text-gray-600">
-                        {forum.creator.name?.[0] || "U"}
-                      </span>
-                    </div>
-                  )}
-                  <span className="ml-2 text-sm text-gray-600">
-                    {forum.creator.name || "Anonymous"}
-                  </span>
-                </div>
-                <span className="text-sm text-gray-500">
-                  {formattedDate}
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-500">
-                  {forum._count.posts} posts
-                </span>
-                {forum.tags.length > 0 && (
-                  <div className="flex space-x-1">
-                    {forum.tags.slice(0, 2).map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                    {forum.tags.length > 2 && (
-                      <span className="text-xs text-gray-500">
-                        +{forum.tags.length - 2}
-                      </span>
-                    )}
+          )}
+
+          {/* Footer with creator, date, and tags */}
+          <div className="flex items-center justify-between flex-wrap mt-4">
+            <div className="flex items-center space-x-4 mr-4">
+              <div className="flex items-center">
+                {forum.creator.image ? (
+                  <img
+                    src={forum.creator.image}
+                    alt={forum.creator.name || "User"}
+                    className="h-8 w-8 rounded-full"
+                  />
+                ) : (
+                  <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span className="text-sm font-medium text-gray-600">
+                      {forum.creator.name?.[0] || "U"}
+                    </span>
                   </div>
                 )}
+                <span className="ml-2 text-sm text-gray-600">
+                  {forum.creator.name || forum.creator.email.split('@')[0]}
+                </span>
               </div>
+              <span className="text-sm text-gray-500">
+                {formattedDate}
+              </span>
             </div>
+              
+            {forum.tags && forum.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2 sm:mt-0">
+                {forum.tags.slice(0, 2).map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800"
+                  >
+                    <FiTag className="mr-1 h-3 w-3" />
+                    {tag}
+                  </span>
+                ))}
+                {forum.tags.length > 2 && (
+                  <span className="text-xs text-gray-500">
+                    +{forum.tags.length - 2}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </Link>
@@ -145,25 +160,24 @@ function ForumItem({ forum }: ForumItemProps) {
   );
 }
 
+// Empty state when no forums are available
 function EmptyState() {
   return (
-    <motion.div 
-      variants={item}
-      className="mt-8 bg-white p-8 rounded-md border border-gray-100 text-center"
-    >
-      <h3 className="text-lg font-medium text-gray-800 mb-2">
-        No discussions yet
-      </h3>
-      <p className="text-gray-600 mb-6">
-        Start the first discussion to get the conversation going!
+    <div className="text-center py-12 px-4 border border-gray-200 rounded-lg bg-gray-50">
+      <FiMessageCircle className="mx-auto h-12 w-12 text-gray-400" />
+      <h3 className="mt-4 text-lg font-medium text-gray-900">No discussions yet</h3>
+      <p className="mt-2 text-sm text-gray-500">
+        Be the first to start a discussion in this community.
       </p>
-      <Link
-        href="/forums/create"
-        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
-      >
-        <FiPlus className="mr-1.5 h-4 w-4" />
-        New discussion
-      </Link>
-    </motion.div>
+      <div className="mt-6">
+        <Link
+          href="/forums/create"
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+        >
+          <FiPlus className="mr-2 h-4 w-4" />
+          New discussion
+        </Link>
+      </div>
+    </div>
   );
 } 
